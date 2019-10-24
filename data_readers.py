@@ -40,15 +40,16 @@ def get_20newsgroups_data(
     )
     target_names = data.target_names
 
-    data = [
-        (d, target_names[target])
+    def truncate_to_maxlen(text):
+        if max_text_len is not None:
+            return text[0 : min(len(text), max_text_len)]
+        else:
+            return text
+
+    text_target_tuples = [
+        (truncate_to_maxlen(d), target_names[target])
         for d, target in zip(data.data, data.target)
         if len(d.split(" ")) > min_num_tokens
     ]
-    if max_text_len is not None:
 
-        def truncate(text):
-            return text[0 : min(len(text), max_text_len)]
-
-        data = [(truncate(d), t) for d, t in data]
-    return data
+    return text_target_tuples

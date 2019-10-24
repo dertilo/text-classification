@@ -1,12 +1,12 @@
 from collections import Counter
 from pprint import pprint
 from time import time
+from typing import List, Union
 
-import numpy as np
 from sklearn import metrics
-from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import SGDClassifier
+from sklearn.linear_model.stochastic_gradient import BaseSGDClassifier
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.preprocessing import LabelEncoder
 
@@ -14,43 +14,40 @@ from data_readers import get_20newsgroups_data
 
 
 def encode_targets(data_train, data_test):
-    train_labels = [label for _, label in data_train]
-    test_labels = [label for _, label in data_test]
+    train_labels: List[str] = [label for _, label in data_train]
+    test_labels: List[str] = [label for _, label in data_test]
     label_encoder = LabelEncoder()
     label_encoder.fit(train_labels)
-    y_train = label_encoder.transform(train_labels)
-    y_test = label_encoder.transform(test_labels)
-    return label_encoder, y_train, y_test
+    targets_train_encoded = label_encoder.transform(train_labels)
+    targets_test_encoded = label_encoder.transform(test_labels)
+    return label_encoder, targets_train_encoded, targets_test_encoded
 
 
-def benchmark(clf):
+def benchmark(
+    clf: Union[BaseSGDClassifier, MultinomialNB],
+    matrix_train,
+    matrix_test,
+    y_train,
+    y_test,
+):
     print("_" * 80)
-    # print(clf)
-    clf_descr = str(clf).split("(")[0]
-    print(clf_descr)
-    t0 = time()
+    print(str(clf).split("(")[0])
 
-    clf.fit(X_train, y_train)
+    t0 = time()
+    clf.fit(matrix_train, y_train)
     train_time = time() - t0
     print("train time: %0.3fs" % train_time)
 
     t0 = time()
-    pred_train = clf.predict(X_train)
-    pred = clf.predict(X_test)
+    pred_train = clf.predict(matrix_train)
+    pred_test = clf.predict(matrix_test)
     test_time = time() - t0
     print("test time:  %0.3fs" % test_time)
 
     score = metrics.accuracy_score(y_train, pred_train)
     print("train-f1-micro:   %0.3f" % score)
-    score = metrics.accuracy_score(y_test, pred)
+    score = metrics.accuracy_score(y_test, pred_test)
     print("test-f1-micro:   %0.3f" % score)
-
-    return {
-        "clf-name": clf_descr,
-        "accuracy": np.round(score, 2),
-        "train-time": np.round(train_time, 3),
-        "test-time": np.round(test_time, 3),
-    }
 
 
 if __name__ == "__main__":
@@ -64,18 +61,21 @@ if __name__ == "__main__":
         max_features=30000,
         stop_words="english",
     )
-    X_train = vectorizer.fit_transform([text for text, _ in data_train])
-    print("n_samples: %d, n_features: %d" % X_train.shape)
+    matrix_train = vectorizer.fit_transform([text for text, _ in data_train])
+    print("n_samples: %d, n_features: %d" % matrix_train.shape)
 
-    X_test = vectorizer.transform([text for text, _ in data_test])
-    print("n_samples: %d, n_features: %d" % X_test.shape)
+    matrix_test = vectorizer.transform([text for text, _ in data_test])
+    print("n_samples: %d, n_features: %d" % matrix_test.shape)
 
     pprint(Counter([label for _, label in data_train]))
 
-    label_encoder, y_train, y_test = encode_targets(data_train, data_test)
+    label_encoder, targets_train, targets_test = encode_targets(data_train, data_test)
 
-    benchmark(
+    def benchmark_fun(clf):
+        return benchmark(clf, matrix_train, matrix_test, targets_train, targets_test)
+
+    benchmark_fun(
         SGDClassifier(alpha=0.0001, loss="log", penalty="elasticnet", l1_ratio=0.2)
     )
 
-    benchmark(MultinomialNB(alpha=0.01))
+    benchmark_fun(MultinomialNB(alpha=0.01))
