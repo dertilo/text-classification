@@ -53,3 +53,10 @@ def get_20newsgroups_data(
     ]
 
     return text_target_tuples
+
+
+if __name__ == "__main__":
+    data_train = get_20newsgroups_data("train")
+    text, label = data_train[0]
+    print(text)
+    print(label)

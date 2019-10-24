@@ -10,7 +10,7 @@ from sklearn.linear_model.stochastic_gradient import BaseSGDClassifier
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.preprocessing import LabelEncoder
 
-from data_readers import get_20newsgroups_data
+from minimal_example.data_reader import get_20newsgroups_data
 
 
 def encode_targets(data_train, data_test):
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         return benchmark(clf, matrix_train, matrix_test, targets_train, targets_test)
 
     benchmark_fun(
-        SGDClassifier(alpha=0.0001, loss="log", penalty="elasticnet", l1_ratio=0.2)
+        SGDClassifier(alpha=0.00001, loss="log", penalty="elasticnet", l1_ratio=0.2)
     )
 
     benchmark_fun(MultinomialNB(alpha=0.01))
