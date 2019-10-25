@@ -51,9 +51,5 @@ if __name__ == "__main__":
 
     label_encoder, targets_train, targets_test = encode_targets(data_train, data_test)
 
-    def benchmark_fun(clf):
-        return benchmark(clf, matrix_train, matrix_test, targets_train, targets_test)
-
-    benchmark_fun(
-        SGDClassifier(alpha=0.00001, loss="log", penalty="elasticnet", l1_ratio=0.2)
-    )
+    clf = SGDClassifier(alpha=0.00001, loss="log", penalty="elasticnet", l1_ratio=0.2)
+    benchmark(clf, matrix_train, matrix_test, targets_train, targets_test)
