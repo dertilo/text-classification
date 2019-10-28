@@ -1,3 +1,5 @@
+import sys
+sys.path.append('.')
 from collections import Counter
 from pprint import pprint
 from time import time

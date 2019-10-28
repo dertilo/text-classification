@@ -1,3 +1,6 @@
+import sys
+sys.path.append('.')
+
 import re
 from collections import Counter
 from pprint import pprint

@@ -1,3 +1,7 @@
+import multiprocessing
+import sys
+sys.path.append('.')
+
 import pandas
 
 import numpy as np
@@ -15,6 +19,8 @@ from mlutil.classification_metrics import calc_classification_metrics
 
 
 def score_fun(split, data, label_encoder, params):
+    split_idx,split = split
+    print('%s is working on split %d'%(multiprocessing.current_process(),split_idx))
     train_idx, test_idx = split
     train_data = [data[i] for i in train_idx]
     test_data = [data[i] for i in test_idx]
@@ -86,7 +92,7 @@ if __name__ == "__main__":
     )
 
     splitter = StratifiedShuffleSplit(n_splits=3, test_size=0.2, random_state=111)
-    splits = list(splitter.split(X=range(len(data)), y=[label for _, label in data]))
+    splits = list(enumerate(splitter.split(X=range(len(data)), y=[label for _, label in data])))
 
     m_scores_std_scores = calc_mean_std_scores(task, splits, n_jobs=3)
     m_scores_train = m_scores_std_scores["m_scores"]["train"]

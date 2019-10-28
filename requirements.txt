@@ -1,1 +1,3 @@
 util@git+https://git@github.com/dertilo/util.git#egg=util
+sklearn
+pandas
