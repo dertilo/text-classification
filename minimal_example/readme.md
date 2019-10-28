@@ -1,5 +1,5 @@
 # minimal example
-
+### [20 newsgroups dataset](https://scikit-learn.org/0.19/datasets/twenty_newsgroups.html)
 #### one train-example
 text
 
@@ -21,7 +21,7 @@ label
     train-f1-micro:   0.971
     test-f1-micro:   0.687
     
-MultinomialNB
+[MultinomialNB](https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html)
 
     train-f1-micro:   0.952
     test-f1-micro:   0.688
