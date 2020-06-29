@@ -10,3 +10,4 @@
 2. __on frontend__: `OMP_NUM_THREADS=2 wandb init`
 3. __on gpu-node__: `WANDB_MODE=dryrun python3 run_pl_glue.py --data_dir ~/data/glue/MRPC --task mrpc --model_name_or_path bert-base-cased --output_dir ~/data/lightning_experiments/glue_mrpc --max_seq_length  128 --learning_rate 2e-5 --num_train_epochs 1 --train_batch_size 32 --seed 2 --do_train --do_predict --gpus 1`
 4. __on frontend__ syncing to wandb: `OMP_NUM_THREADS=4 wandb sync wandb/dryrun-...`
+5. see [results](https://app.wandb.ai/dertilo/text-classification/runs/1o2j6s2m/overview?workspace=user-)
